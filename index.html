@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BlockShot – Campo de Flores Voxel FPS Online</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="score">PONTOS: 0</div>
+<div id="room-info" style="display:none;">SALA: <span id="current-room-name">SALA 1</span> (<span id="room-player-count">1</span>/12)</div>
+<div id="damage-flash"></div>
+<div id="hs-indicator">HEADSHOT!</div>
+<div id="cross" class="style-dot"></div>
+<div id="hud"></div>
+
+<!-- CONSOLE CS (' ou ") -->
+<div id="cs-console">
+  <div id="cs-console-output">BlockShot Developer Console v1.0 (Digite 'tk admin' para acessar o painel)</div>
+  <input type="text" id="cs-console-input" autofocus placeholder="Digite o comando aqui...">
+</div>
+
+<!-- TELA DE LOGIN / AUTENTICAÇÃO -->
+<div id="auth-screen" class="overlay-screen">
+  <h1>BLOCKSHOT</h1>
+  <p>AUTENTICAÇÃO CLOUDFLARE SECURE</p>
+  
+  <div class="menu-panel">
+    <div id="auth-mode-choice">
+      <button class="menu-btn" id="go-login-btn">ENTRAR COM CONTA</button>
+      <button class="menu-btn sec" id="play-visitor-btn">JOGAR COMO VISITANTE</button>
+    </div>
+
+    <div id="auth-form-area" style="display:none;">
+      <h3 id="auth-form-title">Login</h3>
+      <input type="email" id="auth-email" placeholder="E-mail"><br>
+      <input type="password" id="auth-pass" placeholder="Senha"><br>
+      <input type="text" id="auth-nickname" placeholder="Nickname (Exclusivo)" style="display:none;"><br>
+      <div id="age-check-box" style="display:none; font-size:12px; margin:6px;">
+        <input type="checkbox" id="auth-age"> Confirmo ter idade livre.
+      </div>
+      <button class="menu-btn" id="auth-submit-btn">CONTINUAR</button>
+      <button class="menu-btn sec" id="auth-back-btn">VOLTAR</button>
+      <p style="font-size:11px; margin-top:8px; cursor:pointer; color:#ffd36a;" id="toggle-reg-mode">Não tem conta? Cadastre-se</p>
+    </div>
+  </div>
+</div>
+
+<!-- MENU PRINCIPAL -->
+<div id="main-menu-screen" class="overlay-screen" style="display:none;">
+  <h1 id="welcome-player-title">OLÁ, PLAYER</h1>
+  <p>SALA DE PARTIDA MULTIPLAYER (MATA-MATA)</p>
+  
+  <div class="menu-panel">
+    <div id="stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; text-align:left; font-size:13px; margin-bottom: 10px;">
+      <div>BOTS MORTOS: <b id="stat-kills">0</b></div>
+      <div>HEADSHOTS: <b id="stat-hs">0</b></div>
+      <div>PONTOS: <b id="stat-score">0</b></div>
+      <div>MODO: <b id="stat-mode-label">CONTA</b></div>
+    </div>
+    
+    <p style="font-size:12px; color:#ffd36a; margin: 4px 0;">ESCOLHA SUA ARMA:</p>
+    <div style="display:flex; gap:6px; justify-content:center;">
+      <button class="menu-btn weapon-select active" data-weapon="revolver" style="padding:6px 12px; font-size:12px;">REVÓLVER</button>
+      <button class="menu-btn weapon-select sec" data-weapon="smg" style="padding:6px 12px; font-size:12px;">METRALHADORA</button>
+      <button class="menu-btn weapon-select sec" data-weapon="sniper" style="padding:6px 12px; font-size:12px;">SNIPER</button>
+    </div>
+  </div>
+
+  <div>
+    <button class="menu-btn" id="play-game-btn">ENTRAR NA PARTIDA</button>
+    <button class="menu-btn sec" id="logout-btn">TROCAR CONTA / SAIR</button>
+  </div>
+</div>
+
+<!-- TELA DE PAUSA / ESTATÍSTICAS (ESC / B) -->
+<div id="pause-screen" class="overlay-screen" style="display:none;">
+  <h2>PAUSA / ESTATÍSTICAS</h2>
+  <div class="menu-panel" style="max-width: 420px;">
+    <div style="font-size: 13px; text-align: left; margin-bottom: 10px; background: rgba(0,0,0,0.4); padding: 8px;">
+      <div>SEUS KILLS: <b id="pause-kills">0</b></div>
+      <div>HEADSHOTS: <b id="pause-hs">0</b></div>
+      <div>PONTUAÇÃO: <b id="pause-score">0</b></div>
+    </div>
+
+    <p style="font-size:12px; color:#ffd36a; margin: 4px 0;">TROCAR ARMA:</p>
+    <div style="display:flex; gap:6px; justify-content:center; margin-bottom: 12px;">
+      <button class="menu-btn weapon-select-pause active" data-weapon="revolver" style="padding:6px 10px; font-size:11px;">REVÓLVER</button>
+      <button class="menu-btn weapon-select-pause sec" data-weapon="smg" style="padding:6px 10px; font-size:11px;">METRALHADORA</button>
+      <button class="menu-btn weapon-select-pause sec" data-weapon="sniper" style="padding:6px 10px; font-size:11px;">SNIPER</button>
+    </div>
+
+    <button class="menu-btn" id="resume-btn" style="width: 100%; margin: 4px 0;">VOLTAR AO JOGO</button><br>
+    <button class="menu-btn sec" id="exit-to-main-btn" style="width: 100%; margin: 4px 0;">VOLTAR À TELA INICIAL</button>
+  </div>
+</div>
+
+<!-- MODAL ADMIN -->
+<div id="admin-modal" class="modal-screen">
+  <h2>AUTENTICAÇÃO DE ADMINISTRADOR</h2>
+  <div class="menu-panel">
+    <p>Insira as credenciais Cloudflare Admin:</p>
+    <input type="text" id="admin-user-input" placeholder="Usuário Admin"><br>
+    <input type="password" id="admin-pass-input" placeholder="Senha Admin"><br>
+    <button class="menu-btn" id="admin-auth-submit">AUTENTICAR</button>
+  </div>
+  <button class="menu-btn sec" id="close-admin-modal">FECHAR</button>
+</div>
+
+<!-- DASHBOARD ADMIN -->
+<div id="admin-dashboard-modal" class="modal-screen">
+  <h2>PAINEL DE CONTROLE ADMIN</h2>
+  <div class="menu-panel" style="max-width: 600px;">
+    <input type="text" id="admin-search" placeholder="Pesquisar por Nickname...">
+    <div id="admin-list-container" style="max-height: 200px; overflow-y:auto; background:#111; margin-top:10px; padding:8px; text-align:left; font-size:12px;"></div>
+  </div>
+  <button class="menu-btn sec" id="close-dashboard-btn">FECHAR PAINEL</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
